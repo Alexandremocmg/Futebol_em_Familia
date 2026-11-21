@@ -15,6 +15,14 @@ const reelAssets={
       'Olhe o passe. Use a parte de dentro do pé. Passe rasteiro.',
       'Espere a bola chegar. Domine pertinho do pé e passe de volta.'
     ]
+  },
+  finalizacao:{
+    path:'chute-ao-gol-v1',
+    lines:[
+      'Monte dois gols com cones. Deixe espaço no meio.',
+      'Olhe os pés e a bola. Veja como o jogador finaliza.',
+      'Agora é sua vez. Conduza, escolha um gol e chute rasteiro.'
+    ]
   }
 };
 const lessonCues=[0,5.2,12.2];
