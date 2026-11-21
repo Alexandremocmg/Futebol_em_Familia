@@ -42,3 +42,10 @@
   .demo-dialog{padding:12px}
   .demo-dialog h2{font-size:1.3rem}
 }
+.kid-timer{display:grid;gap:13px;text-align:center;padding:5px 0 9px}
+.kid-timer .label{display:grid;justify-items:center;gap:5px}
+.kid-timer .kid-actions{justify-content:center}
+.kid-timer .kid-actions button{min-width:min(130px,100%)}
+.kid-timer-title{font-weight:750;color:var(--muted)}
+.kid-timer-digits{background:#e3f4d8;color:#173c2b;border-radius:22px;padding:12px 6px;font-size:clamp(3rem,13vw,5.2rem);line-height:1;font-weight:850;font-variant-numeric:tabular-nums;letter-spacing:-.055em}
+.kid-timer-message{font-size:1.1rem;font-weight:750}

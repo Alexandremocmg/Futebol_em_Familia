@@ -197,6 +197,7 @@ function kidHome(root) {
     const task=add(el('section',null,'kid-task'),icon,add(el('div'),el('p','Hoje','kid-sub'),el('h2',title),el('p',text)));
     if(lesson) {
       const actions=add(el('div',null,'kid-actions'),button('▶ Ver como faz',()=>kidDemo(item.type,active,now),'primary'));
+      actions.append(button('⏱ Temporizador',()=>kidTimer(item.type,active,now)));
       if(!saved)actions.append(button('✓ Já fiz',()=>kidFinish(active,now,item)));
       task.append(actions);
     }
@@ -324,7 +325,117 @@ function kidDemo(id,profile,date){
     }));
     if(state.records[activityKey(profile.id,date)])panel.lastChild.hidden=true;
   }
+  panel.append(button('⏱ Temporizador',()=>{
+    const selected=profile??state.profiles.find(p=>p.id===kidProfileId);
+    kidTimer(id,selected,date);
+  }));
   tip.textContent=canSpeak?'A narração usa a voz em português do seu aparelho.':'Acompanhe a demonstração pela legenda.';
   openModal(lesson.name,panel);paint();
 }
 $('dialog').addEventListener('close',()=>{if(!$('dialog').open)activeKidDemo?.();});
+
+const timerMemory=new Map();
+const timerPrefix='futebol-em-familia-timer-v1:';
+let activeKidTimer=null;
+function kidTimer(id,profile,date=today()) {
+  activeKidDemo?.();
+  activeKidTimer?.();
+  const lesson=kidLessons[id];
+  const age=profile?.age??7;
+  const planned=profile?activity(profile,date):null;
+  const planMinutes=planned?.type===id?Number(planned.minutes):0;
+  const suggested=planMinutes||Number(duration(id,age).match(/\d+/)?.[0])||5;
+  const key=timerPrefix+[profile?.id??'livre',date,id].join('|');
+  function readTimer(){
+    try{
+      const previous=JSON.parse(localStorage.getItem(key));
+      if(previous&&Number.isFinite(previous.remaining)&&Number.isFinite(previous.minutes))return previous;
+    }catch{}
+    return timerMemory.get(key)??{minutes:suggested,remaining:suggested*60000,endAt:0};
+  }
+  let clock=readTimer(), interval=0, sound=null, lastSeconds=null;
+  const dialog=$('dialog');
+  const digits=el('p',null,'kid-timer-digits');
+  digits.setAttribute('role','timer');
+  digits.setAttribute('aria-label','Tempo restante');
+  const message=el('p',null,'kid-timer-message');
+  message.setAttribute('role','status');
+  const options=[...new Set([1,3,5,10,15,20,25,30,35,40,suggested,clock.minutes])].sort((a,b)=>a-b);
+  const preset=select(options.map(n=>[String(n),n+' min']),String(clock.minutes));
+  const go=button('▶ Começar',()=>{
+    if(clock.endAt){
+      clock.remaining=remaining();
+      clock.endAt=0;
+    } else {
+      if(clock.remaining<=0)clock.remaining=clock.minutes*60000;
+      clock.endAt=Date.now()+clock.remaining;
+      try {
+        const Audio=window.AudioContext||window.webkitAudioContext;
+        if(Audio){
+          sound??=new Audio();
+          sound.resume().catch(()=>{});
+        }
+      }catch{}
+    }
+    lastSeconds=null;
+    writeTimer();refresh();
+  },'primary');
+  const restart=button('↻ Reiniciar',()=>{
+    clock.endAt=0;clock.remaining=clock.minutes*60000;
+    lastSeconds=null;
+    writeTimer();refresh();
+  });
+  preset.onchange=()=>{
+    const minutes=Number(preset.value);
+    clock={minutes,remaining:minutes*60000,endAt:0};
+    lastSeconds=null;
+    writeTimer();refresh();
+  };
+  function writeTimer(){
+    timerMemory.set(key,{...clock});
+    try{localStorage.setItem(key,JSON.stringify(clock));}catch{}
+  }
+  function remaining(){return clock.endAt?Math.max(0,clock.endAt-Date.now()):clock.remaining;}
+  function finishSound(){
+    if(!sound||sound.state!=='running'||document.hidden)return;
+    for(const [delay,frequency] of [[0,620],[.19,820]]){
+      const at=sound.currentTime+delay;
+      const tone=sound.createOscillator(), volume=sound.createGain();
+      tone.frequency.value=frequency;
+      volume.gain.setValueAtTime(.13,at);
+      volume.gain.exponentialRampToValueAtTime(.001,at+.17);
+      tone.connect(volume).connect(sound.destination);
+      tone.start(at);tone.stop(at+.18);
+    }
+  }
+  function refresh(){
+    if(!dialog.open||!digits.isConnected){close();return;}
+    const seconds=Math.ceil(remaining()/1000);
+    if(clock.endAt&&seconds===0){
+      if(lastSeconds!==null&&lastSeconds>0)finishSound();
+      clock.remaining=0;clock.endAt=0;writeTimer();
+    }
+    if(seconds!==lastSeconds){
+      digits.textContent=String(Math.floor(seconds/60)).padStart(2,'0')+':'+String(seconds%60).padStart(2,'0');
+      lastSeconds=seconds;
+    }
+    const status=seconds===0?'Tempo acabou!':clock.endAt?'Valendo!':clock.remaining===clock.minutes*60000?'Tudo pronto?':'Em pausa';
+    if(message.textContent!==status)message.textContent=status;
+    const text=clock.endAt?'Ⅱ Pausar':seconds>0&&clock.remaining<clock.minutes*60000?'▶ Continuar':'▶ Começar';
+    if(go.textContent!==text)go.textContent=text;
+    preset.disabled=Boolean(clock.endAt);
+  }
+  function close(){
+    clearInterval(interval);
+    sound?.close().catch(()=>{});
+    activeKidTimer=null;
+  }
+  activeKidTimer=close;
+  openModal('Temporizador',add(el('div',null,'kid-timer'),
+    el('p',lesson.name,'kid-timer-title'),label('Quanto tempo?',preset),digits,message,
+    add(el('div',null,'kid-actions'),go,restart),
+    el('p','Você pode pausar para beber água ou descansar.','demo-help')));
+  interval=setInterval(refresh,200);
+  refresh();
+}
+$('dialog').addEventListener('close',()=>{if(!$('dialog').open)activeKidTimer?.();});
