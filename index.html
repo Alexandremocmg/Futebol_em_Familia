@@ -1,0 +1,381 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#102c25">
+<link rel="manifest" href="./manifest.webmanifest">
+<title>Futebol em Família</title>
+<style>
+:root{color-scheme:light;--ink:#142b23;--muted:#4a6359;--dark:#102c25;--green:#19553d;--lime:#dcfa86;--paper:#f5f7ef;--line:#d8e4d8;--white:#fff;--radius:20px;font:16px/1.5 system-ui,sans-serif}
+*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink)}button,input,select,textarea{font:inherit;color:inherit}button{cursor:pointer;min-height:44px;border:1px solid var(--line);border-radius:11px;padding:8px 14px;background:var(--white);font-weight:650}button:hover{border-color:var(--green)}:focus-visible{outline:3px solid #a86612;outline-offset:3px}button:disabled{opacity:.48;cursor:default}button.primary{background:var(--green);color:#fff;border-color:var(--green)}button.danger{color:#a02c26}a{color:var(--green)}h1,h2,h3,p{margin:0}h1,h2,h3{line-height:1.15;letter-spacing:-.035em}h2{font-size:clamp(1.65rem,4vw,2.25rem)}h3{font-size:1.25rem}.muted,small{color:var(--muted)}.wrap{max-width:1040px;margin:auto;padding:0 24px}.top{background:var(--dark);color:white;border-bottom:1px solid #365447}.top .wrap{display:flex;align-items:center;justify-content:space-between;gap:14px;min-height:72px}.brand{display:flex;gap:10px;align-items:center;font-weight:800;letter-spacing:-.02em}.mark{display:grid;place-items:center;width:37px;height:37px;border-radius:50%;background:var(--lime);color:var(--dark);font-size:21px}nav{display:flex;gap:4px;flex-wrap:wrap}nav button{border-color:transparent;background:transparent;color:white;font-size:.88rem}nav button[aria-current=page]{background:var(--lime);color:var(--dark)}main{padding-block:32px 55px!important}.hero{position:relative;isolation:isolate;overflow:hidden;background:var(--dark);color:white;border-radius:26px;padding:34px;margin-bottom:28px;min-height:204px;display:grid;align-content:center}.hero h1{font-size:clamp(2.5rem,7vw,4rem);max-width:620px}.hero p{color:#e0f0e8;margin-top:9px}.hero small{color:var(--lime);font-weight:800;text-transform:uppercase;letter-spacing:.13em}.field{position:absolute;z-index:-1;right:-75px;top:-63px;width:450px;height:335px;border:2px solid #527355;border-radius:12px;transform:rotate(-18deg);background:repeating-linear-gradient(90deg,#234438 0 45px,#284c3e 45px 90px);opacity:.72}.field:before{content:"";position:absolute;left:50%;top:0;bottom:0;border-left:2px solid #668766}.field:after{content:"";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:120px;height:120px;border:2px solid #668766;border-radius:50%}.section{margin:24px 0 14px;display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.card{border:1px solid var(--line);background:white;border-radius:var(--radius);padding:19px;display:grid;gap:9px;align-content:start;min-width:0}.card h3{overflow-wrap:anywhere}.row{display:flex;align-items:center;gap:9px;flex-wrap:wrap}.between{justify-content:space-between}.pill{display:inline-block;font-size:.78rem;font-weight:800;background:#e4f2e7;color:#24513b;border-radius:999px;padding:4px 10px}.pill.rest{background:#f0f0e5;color:#515842}.actions{margin-top:4px}.empty{padding:22px;border:1px dashed #9aae9e;border-radius:14px}.agenda{display:grid;gap:12px}.day{border:1px solid var(--line);background:#eaf1e5;border-radius:var(--radius);padding:14px}.day>h3{margin-bottom:10px;font-size:1rem;letter-spacing:0}.label{display:block;font-size:.9rem;font-weight:700}input:not([type=checkbox]),select,textarea{display:block;max-width:100%;border:1px solid #a4b8a9;border-radius:10px;background:#fff;padding:9px 11px;min-height:44px}input[type=checkbox]{width:19px;height:19px;vertical-align:middle;accent-color:var(--green)}textarea{width:100%;resize:vertical}form{display:grid;gap:13px}fieldset{border:1px solid var(--line);border-radius:12px;padding:10px}fieldset label{display:inline-block;margin:3px 10px 3px 0}dialog{border:1px solid var(--line);border-radius:22px;width:min(650px,calc(100vw - 22px));max-height:92dvh;padding:21px;color:var(--ink);background:white}dialog::backdrop{background:#112c24aa}.close{padding:5px 11px}dialog h2{font-size:1.55rem}dialog .body{display:grid;gap:12px;margin-top:12px}canvas{display:block;width:100%;height:auto;background:var(--dark);border-radius:13px}.thumb{max-height:115px;object-fit:cover}.guide{margin:0;padding-left:25px}.guide li{padding:4px}.guide li[aria-current=step]{font-weight:750;color:#1b593d}.note{background:#fcf0d2;border:1px solid #dac089;border-radius:12px;padding:11px 13px;margin:10px 0}.profile-filter{width:min(100%,230px)}#toast{position:fixed;z-index:5;bottom:14px;left:50%;transform:translateX(-50%);background:var(--dark);color:white;border-radius:12px;padding:10px 16px;max-width:90vw}#toast:empty{display:none}details summary{cursor:pointer;font-weight:700;min-height:44px;padding:8px 0}details>div{display:grid;gap:8px}.history-item{border-top:1px solid var(--line);padding-top:9px}.prefs{margin-top:12px}
+@media(max-width:640px){.wrap{padding-inline:14px}.top .wrap{display:block;padding-top:12px;padding-bottom:7px}.top nav{justify-content:space-between;margin-top:7px;gap:0}.top nav button{padding-inline:7px;font-size:.82rem}.grid{grid-template-columns:1fr}.hero{padding:23px;min-height:180px}.field{right:-265px;opacity:.55}main{padding-top:16px!important}.card{padding:14px}.day{padding:9px}}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap"><div class="brand"><span class="mark" aria-hidden="true">⚽</span> Futebol em Família</div><nav aria-label="Navegação principal" id="nav"></nav></div></header>
+<main class="wrap" id="main"></main>
+<dialog id="dialog" aria-labelledby="dialogTitle"><div class="row between"><h2 id="dialogTitle"></h2><button class="close" id="close" aria-label="Fechar">✕</button></div><div id="dialogBody" class="body"></div></dialog>
+<div id="toast" role="status"></div>
+<script>
+"use strict";
+const $ = id => document.getElementById(id);
+const el = (tag, content, cls) => {
+  const node = document.createElement(tag);
+  if (cls) node.className = cls;
+  if (content != null) node.textContent = content;
+  return node;
+};
+const add = (parent, ...children) => { parent.append(...children.filter(Boolean)); return parent; };
+const button = (text, click, cls) => {
+  const node = el('button', text, cls); node.type = 'button'; node.addEventListener('click', click); return node;
+};
+const submit = text => { const b = el('button', text, 'primary'); b.type = 'submit'; return b; };
+const dateKey = date => [date.getFullYear(), String(date.getMonth()+1).padStart(2,'0'), String(date.getDate()).padStart(2,'0')].join('-');
+const today = () => dateKey(new Date());
+const dateOf = key => new Date(key+'T12:00:00');
+const offset = (key, n) => { const date = dateOf(key); date.setDate(date.getDate()+n); return dateKey(date); };
+const diff = (a,b) => Math.round((dateOf(a)-dateOf(b))/86400000);
+const weekOf = date => Math.floor(diff(date,state.start)/7)+1;
+const fmt = (date, full=false) => new Intl.DateTimeFormat('pt-BR',full ? {weekday:'long',day:'numeric',month:'long'} : {day:'2-digit',month:'2-digit'}).format(dateOf(date));
+const currentMonday = () => offset(today(), -(dateOf(today()).getDay()+6)%7);
+const days = ['Segunda','Terça','Quarta','Quinta','Sexta','Sábado','Domingo'];
+const plan = ['conducao','passe','rest','finalizacao','movimento','jogo','rest'];
+const content = {
+ conducao:{title:'Condução e domínio',min:['20–25 min','25–35 min'],goal:'Conduzir a bola, parar e mudar de direção com controle.',kit:'Bola e três marcadores baixos.',age:['Use um caminho amplo e deixe a criança escolher como atravessar.','Alterne os pés e olhe para indicar a cor que o adulto mostrar.'],steps:['Coloque três marcadores baixos e deixe espaço entre eles.','Conduza a bola entre os marcadores com toques curtos.','Pare a bola com a sola, mude de direção e siga para o outro lado.']},
+ passe:{title:'Passe e recepção',min:['20–25 min','25–35 min'],goal:'Passar com precisão e preparar o próximo toque ao receber.',kit:'Bola, dois marcadores e um parceiro ou uma parede segura.',age:['Use um alvo próximo e deixe a criança usar os toques que precisar.','Direcione a recepção para um lado antes de devolver; experimente o outro pé.'],steps:['Monte uma porta com dois marcadores e fique de frente para o parceiro.','Passe a bola rasteira pela porta usando a parte de dentro do pé.','Receba a devolução com a bola perto do corpo e faça outro passe.']},
+ finalizacao:{title:'Drible e finalização',min:['20–25 min','25–35 min'],goal:'Conduzir, escolher uma meta e chutar com controle.',kit:'Bola e quatro marcadores para duas metas.',age:['Faça metas maiores e próximas e deixe a criança escolher.','O adulto indica a meta enquanto a criança conduz; experimente os dois pés.'],steps:['Monte duas metas com marcadores, uma de cada lado.','Conduza a bola pelo meio e olhe para escolher uma meta.','Chute rasteiro na direção escolhida e recomece alternando o lado.']},
+ movimento:{title:'Brincadeiras de movimento',min:['20–30 min','20–30 min'],goal:'Brincar com equilíbrio e coordenação.',kit:'Giz ou fita segura para marcar quadrados no chão.',age:['Comece com passos ou saltos curtos, com apoio dos dois pés quando quiser.','Experimente alternar um e dois pés ou inventar outro percurso.'],steps:['Marque quadrados no chão como em uma amarelinha.','Salte ou caminhe pelos quadrados, com uma pausa para se equilibrar.','Volte pelo percurso e invente uma variação ou escolha outra brincadeira.']},
+ jogo:{title:'Jogo em espaço reduzido',min:['Cerca de 30 min','Cerca de 40 min'],goal:'Experimentar o que aprendeu e cooperar com outras crianças.',kit:'Bola e quatro marcadores para pequenas metas.',age:['Dê espaço para experimentar e faça pausas quando precisar.','Experimente se mover para receber o passe e variar a jogada.'],steps:['Marque duas metas e organize equipes de 2 ou 3 crianças.','Joguem em rodadas curtas, garantindo que todas participem.','Façam uma pausa, conversem sobre uma jogada e troquem as equipes se quiserem.']}
+};
+const phase = week => week<=4 ? 'Explorar e ganhar controle' : week<=8 ? 'Escolher enquanto joga' : 'Usar em jogos';
+const progression = week => week<=4 ? 'Dê espaço e deixe a criança experimentar os dois pés.' : week<=8 ? 'Acrescente uma escolha por vez: direção, passe ou alvo.' : 'Experimente a habilidade em um jogo pequeno e observe a cooperação.';
+const defaults = () => ({start:currentMonday(), profiles:[{id:'p7',name:'Filho de 7 anos',age:7,school:[]},{id:'p9',name:'Filho de 9 anos',age:9,school:[]}], overrides:{}, records:{}, reviews:{}});
+const key = 'futebol-em-familia-v1';
+let state = defaults();
+let storageError = false;
+try {
+  const raw = localStorage.getItem(key);
+  if (raw) state = JSON.parse(raw);
+  else localStorage.setItem(key, JSON.stringify(state));
+} catch { storageError = true; }
+let view = 'Hoje', chosenWeek = Math.max(1, Math.min(12, weekOf(today()))), filter='all', catalogAge=7;
+let toastTimer;
+function notify(message) {
+  $('toast').textContent=message;
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>{ $('toast').textContent=''; },3800);
+}
+function save(message) {
+  try { localStorage.setItem(key, JSON.stringify(state)); storageError=false; notify(message); }
+  catch { storageError=true; notify('O navegador não conseguiu gravar. As mudanças estão abertas nesta sessão.'); }
+  render();
+}
+const activityKey = (id,date) => id + '|' + date;
+const typeTitle = type => content[type]?.title ?? (type==='school' ? 'Escolinha' : 'Descanso do futebol');
+const duration = (type,age) => content[type]?.min[age===9 ? 1 : 0] ?? '';
+function activity(profile,date) {
+  const id=activityKey(profile.id,date);
+  if (state.records[id]) return state.records[id].activity;
+  if (state.overrides[id]) return state.overrides[id];
+  const day=(dateOf(date).getDay()+6)%7;
+  const type=profile.school.includes(day) ? 'school' : plan[day];
+  return {type, minutes:'', age:profile.age};
+}
+function status(profile,date,item) {
+  return item.type==='rest' ? 'Descanso' : state.records[activityKey(profile.id,date)]?.status ?? (date<today() ? 'Sem registro' : 'Planejada');
+}
+function selectedProfiles() { return state.profiles.filter(p=>filter==='all'||p.id===filter); }
+function label(text, input) { return add(el('label',null,'label'), el('span',text), input); }
+function input(type,value='',extra={}) {
+  const node=el('input'); node.type=type; node.value=value; Object.assign(node,extra); return node;
+}
+function select(items,value) {
+  const node=el('select');
+  for(const [v,t] of items) { const op=el('option',t); op.value=v; node.append(op); }
+  node.value=value; return node;
+}
+function textarea(value,limit=300) {
+  const node=el('textarea'); node.rows=2; node.maxLength=limit; node.value=value; return node;
+}
+function titleRow(title,...controls) { return add(el('div',null,'section'),el('h2',title),...controls); }
+function filterControl() {
+  const pick=select([['all','Todos os perfis'],...state.profiles.map(p=>[p.id,p.name])],filter);
+  pick.className='profile-filter'; pick.setAttribute('aria-label','Filtrar por filho');
+  pick.onchange=()=>{filter=pick.value; render();}; return pick;
+}
+function openModal(title,...nodes) {
+  $('dialogTitle').textContent=title;
+  $('dialogBody').replaceChildren(...nodes);
+  if (!$('dialog').open) $('dialog').showModal();
+}
+$('close').onclick=()=>$('dialog').close();
+function dateBounds() { return [state.start,offset(state.start,83)]; }
+function card(profile,date,allowEdit) {
+  const item=activity(profile,date);
+  const statusPill=el('span',status(profile,date,item),'pill'+(item.type==='rest'?' rest':''));
+  const head=add(el('div',null,'row between'),el('small',profile.name+' · '+item.age+' anos'),statusPill);
+  const time=item.minutes ? item.minutes+' min' : duration(item.type,item.age);
+  const detail=item.type==='rest' ? 'Brincadeira livre e tempo em família.' : item.type==='school' ? (time || 'Sessão da escolinha.') : time+' · '+content[item.type].age[item.age===9 ? 1 : 0];
+  const actions=el('div',null,'row actions');
+  if(content[item.type]) actions.append(button('Ver exercício',()=>guide(item.type,item.age,weekOf(date),profile,date),'primary'));
+  if(item.type!=='rest') actions.append(button(state.records[activityKey(profile.id,date)]?'Editar registro':'Registrar',()=>record(profile,date)));
+  if(allowEdit) actions.append(button('Ajustar dia',()=>adjust(profile,date)));
+  return add(el('article',null,'card'),head,el('h3',typeTitle(item.type)),el('p',detail,'muted'),actions);
+}
+function home(root) {
+  const now=today(); const week=weekOf(now);
+  const hero=add(el('section',null,'hero'),el('div',null,'field'),el('small',week>0&&week<=12 ? 'Semana '+week+' de 12' : 'Plano de 12 semanas'),el('h1','Hora de jogar'),el('p',fmt(now,true)));
+  root.append(hero);
+  if (!state.profiles.length) return root.append(add(el('div',null,'empty'),el('p','Crie um perfil para ver a rotina.'),button('Abrir perfis',()=>go('Perfis'),'primary')));
+  if(week<1||week>12) return root.append(add(el('div',null,'empty'),el('p',week<1?'O ciclo começa em '+fmt(state.start,true)+'.':'O ciclo de 12 semanas terminou.'),button('Ver agenda',()=>go('Agenda'),'primary')));
+  root.append(titleRow('Atividades de hoje',button('Ver semana',()=>{chosenWeek=week;go('Agenda');})),add(el('div',null,'grid'),...state.profiles.map(p=>card(p,now,true))));
+  root.append(add(el('div',null,'section'),el('p',phase(week)+' · '+progression(week),'muted')));
+}
+function agenda(root) {
+  const pick=select(Array.from({length:12},(_,i)=>[String(i+1),'Semana '+(i+1)+' de 12']),String(chosenWeek));
+  pick.setAttribute('aria-label','Semana do plano'); pick.onchange=()=>{chosenWeek=Number(pick.value);render();};
+  const prev=button('←',()=>{chosenWeek--;render();}); prev.disabled=chosenWeek===1; prev.setAttribute('aria-label','Semana anterior');
+  const next=button('→',()=>{chosenWeek++;render();}); next.disabled=chosenWeek===12; next.setAttribute('aria-label','Próxima semana');
+  const start=offset(state.start,(chosenWeek-1)*7);
+  root.append(titleRow('Agenda',add(el('div',null,'row'),prev,pick,next,filterControl())),el('p',fmt(start)+' a '+fmt(offset(start,6))+' · '+phase(chosenWeek),'muted'));
+  const dates=days.map((_,i)=>offset(start,i));
+  for(const p of selectedProfiles()) {
+    const free=dates.filter(date=>['rest','movimento'].includes(activity(p,date).type)).length;
+    if(free<2) root.append(el('p',p.name+' tem '+free+' dia(s) sem treino específico de futebol nesta semana. Preserve dois dias livres.','note'));
+  }
+  const list=el('div',null,'agenda section'); list.style.display='grid';
+  if(!selectedProfiles().length) list.append(el('p','Crie um perfil para preencher a agenda.','empty'));
+  else dates.forEach((date,i)=>list.append(add(el('section',null,'day'),el('h3',days[i]+' · '+fmt(date)+(date===today()?' · Hoje':'')),add(el('div',null,'grid'),...selectedProfiles().map(p=>card(p,date,true))))));
+  root.append(list);
+}
+function record(profile,date) {
+  const id=activityKey(profile.id,date), existing=state.records[id], item=activity(profile,date);
+  const form=el('form');
+  const result=select(['Realizada','Parcial','Não realizada'].map(x=>[x,x]),existing?.status??'Realizada');
+  const mins=input('number',existing?.minutes??'',{min:1,max:300});
+  const mood=select([['','Deixar em branco'],...['Gostou','Mais ou menos','Não gostou'].map(x=>[x,x])],existing?.mood??'');
+  const notes=textarea(existing?.notes??'');
+  add(form,label('Situação',result),label('Duração real em minutos (opcional)',mins),label('Como foi?',mood),label('Observação (opcional)',notes),add(el('div',null,'row'),submit('Salvar registro')));
+  form.onsubmit=e=>{
+    e.preventDefault();
+    state.records[id]={activity:item,status:result.value,minutes:mins.value?Number(mins.value):null,mood:mood.value,notes:notes.value.trim()};
+    $('dialog').close();save('Atividade registrada.');
+  };
+  openModal('Registrar atividade',el('p',profile.name+' · '+fmt(date,true)+' · '+typeTitle(item.type),'muted'),form);
+}
+function adjust(profile,date) {
+  const id=activityKey(profile.id,date);
+  if(state.records[id]) return openModal('Atividade registrada',el('p','Você pode corrigir a situação no histórico.'),button('Editar registro',()=>record(profile,date),'primary'));
+  const item=activity(profile,date);
+  const form=el('form');
+  const type=select([...Object.keys(content),'school','rest'].map(x=>[x,typeTitle(x)]),item.type);
+  const mins=input('number',item.minutes,{min:1,max:300});
+  const [min,max]=dateBounds();
+  const to=input('date',date,{min,max,required:true});
+  const error=el('p','','muted'); error.setAttribute('role','status');
+  add(form,label('Atividade',type),label('Duração sugerida em minutos (opcional)',mins),label('Data',to),el('small','A mudança vale apenas para este perfil.'),error,submit('Salvar ajuste'));
+  form.onsubmit=e=>{
+    e.preventDefault();
+    const dest=activityKey(profile.id,to.value);
+    if(to.value!==date) {
+      if(state.records[dest]) {error.textContent='A data de destino já tem um registro. Escolha outra.';return;}
+      const target=activity(profile,to.value);
+      if(target.type!=='rest') {
+        openModal('Atividade na data de destino',el('p','Em '+fmt(to.value)+', '+profile.name+' já tem '+typeTitle(target.type)+'. Escolha qual atividade manter.'),add(el('div',null,'row'),button('Manter atividade da data',()=>adjust(profile,date)),button('Mover e substituir',()=>commit(),'primary')));
+        return;
+      }
+    }
+    commit();
+  };
+  function commit(){
+    if(to.value!==date) state.overrides[id]={type:'rest',minutes:'',age:profile.age};
+    state.overrides[activityKey(profile.id,to.value)]={type:type.value,minutes:type.value==='rest'?'':mins.value,age:profile.age};
+    $('dialog').close();save('Agenda ajustada.');
+  }
+  openModal('Ajustar dia',el('p',profile.name+' · '+fmt(date,true),'muted'),form);
+}
+
+function pitch(id,step,thumb=false) {
+  const canvas=el('canvas',null,thumb?'thumb':''); canvas.width=640; canvas.height=300;
+  canvas.setAttribute('role','img');
+  canvas.setAttribute('aria-label',content[id].steps[step]);
+  const ctx=canvas.getContext('2d');
+  const green='#255842', pale='#d8f7bd', white='#fff8e5', lime='#e4ff83', coral='#ffb585';
+  ctx.fillStyle=green;ctx.fillRect(0,0,640,300);
+  for(let i=0;i<8;i+=2){ctx.fillStyle='#2c614a';ctx.fillRect(i*80,0,80,300);}
+  ctx.strokeStyle='#87ad89';ctx.lineWidth=2;ctx.strokeRect(24,24,592,252);
+  const line=(points,color,width=4)=>{
+    ctx.strokeStyle=color;ctx.lineWidth=width;ctx.lineJoin='round';ctx.lineCap='round';
+    ctx.beginPath(); points.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y));ctx.stroke();
+  };
+  const arrow=(pts)=>{
+    line(pts,lime,6);
+    const [x,y]=pts.at(-1), [a,b]=pts.at(-2), ang=Math.atan2(y-b,x-a);
+    line([[x-16*Math.cos(ang-.55),y-16*Math.sin(ang-.55)],[x,y],[x-16*Math.cos(ang+.55),y-16*Math.sin(ang+.55)]],lime,6);
+  };
+  const circle=(x,y,r,color)=>{ctx.beginPath();ctx.fillStyle=color;ctx.arc(x,y,r,0,2*Math.PI);ctx.fill();};
+  const cone=(x,y)=>{ctx.fillStyle=coral;ctx.beginPath();ctx.moveTo(x,y-15);ctx.lineTo(x-12,y+11);ctx.lineTo(x+12,y+11);ctx.closePath();ctx.fill();};
+  const ball=(x,y)=>{circle(x,y,12,white);circle(x,y,4,'#16362c');};
+  const player=(x,y,t)=>{circle(x,y,20,t==='A'?'#bce4ff':coral);ctx.fillStyle='#152d24';ctx.font='bold 16px system-ui';ctx.textAlign='center';ctx.fillText(t,x,y+6);};
+  const net=(x,y,w,h)=>{ctx.strokeStyle=white;ctx.lineWidth=4;ctx.strokeRect(x,y,w,h);};
+  if(id==='conducao'){
+    [[210,149],[320,149],[430,149]].forEach(([x,y])=>cone(x,y));
+    ball(step===2?484:109,step===2?126:151);
+    if(step===1) arrow([[134,151],[205,112],[316,192],[426,110],[487,126]]);
+    if(step===2){ctx.strokeStyle=white;ctx.lineWidth=3;ctx.beginPath();ctx.arc(484,126,25,0,2*Math.PI);ctx.stroke();arrow([[499,151],[513,209],[406,219]]);}
+  } else if(id==='passe'){
+    cone(317,96);cone(317,201);player(99,150,'A');player(536,150,'B');ball(step===2?493:137,150);
+    if(step===1) arrow([[155,150],[477,150]]);
+    if(step===2) arrow([[473,150],[365,150],[244,193],[143,193]]);
+  } else if(id==='finalizacao'){
+    net(507,54,60,53);net(507,194,60,53);
+    [[507,54],[507,107],[507,194],[507,247]].forEach(([x,y])=>cone(x,y));
+    ball(step===2?345:106,150);
+    if(step===1) arrow([[131,150],[309,150],[387,112]]);
+    if(step===2) arrow([[368,150],[434,135],[523,81]]);
+  } else if(id==='movimento'){
+    const boxes=[[132,115],[202,115],[272,80],[272,150],[342,115],[412,80],[412,150],[482,115]];
+    boxes.forEach(([x,y],i)=>{net(x,y,62,62);ctx.fillStyle=pale;ctx.textAlign='center';ctx.font='bold 18px system-ui';ctx.fillText(i+1,x+31,y+36);});
+    if(step===1) arrow([[99,210],[177,221],[263,222],[350,223],[480,222],[546,196]]);
+    if(step===2) arrow([[532,65],[454,49],[355,53],[236,56],[146,75]]);
+  } else {
+    net(34,115,30,70);net(576,115,30,70);
+    if(step===2){player(254,129,'A');player(304,129,'A');player(354,129,'B');player(404,129,'B');ball(329,181);}
+    else {player(168,99,'A');player(244,202,'A');player(471,99,'B');player(430,195,'B');ball(283,175);if(step===1) arrow([[308,169],[383,140],[493,147],[567,147]]);}
+  }
+  return canvas;
+}
+function guide(id,age,week,profile,date) {
+  const data=content[id]; let step=0;
+  const panel=el('div',null,'body');
+  const list=el('ol',null,'guide');
+  const items=data.steps.map(x=>el('li',x)); list.append(...items);
+  const stage=el('div');
+  const caption=el('p',null,'muted'); caption.setAttribute('aria-live','polite');
+  const back=button('Passo anterior',()=>{step--;update();});
+  const next=button('Próximo passo',()=>{step++;update();},'primary');
+  function update(){
+    stage.replaceChildren(pitch(id,step));
+    caption.textContent='Passo '+(step+1)+' de '+items.length+' · '+data.steps[step];
+    items.forEach((x,i)=>{if(i===step)x.setAttribute('aria-current','step');else x.removeAttribute('aria-current');});
+    back.disabled=step===0; next.disabled=step===items.length-1;
+    if(document.activeElement===next&&next.disabled) back.focus();
+    if(document.activeElement===back&&back.disabled) next.focus();
+  }
+  const dateItem=profile&&date?activity(profile,date):null;
+  const time=dateItem?.minutes?dateItem.minutes+' min':duration(id,age);
+  add(panel,el('p',age+' anos · '+time+' · '+phase(week),'muted'),el('p',data.goal),
+      el('p','Materiais: '+data.kit),stage,caption,add(el('div',null,'row'),back,next),list,
+      el('p',data.age[age===9?1:0]),el('p',progression(week),'muted'),
+      ['conducao','passe','finalizacao'].includes(id)?el('small','Exemplo de 25 min: 5 min de brincadeira, 10 min de exercício, 8 min de jogo e 2 min de conversa. Ajuste à disposição.'):null,
+      profile ? button('Registrar atividade',()=>record(profile,date),'primary'):null);
+  update(); openModal(data.title,panel);
+}
+function catalog(root) {
+  const age=select([['7','7 anos'],['9','9 anos']],String(catalogAge));
+  age.setAttribute('aria-label','Faixa do exercício');
+  age.onchange=()=>{catalogAge=Number(age.value);render();};
+  root.append(titleRow('Exercícios',age),el('p','Abra uma ficha para ver a montagem e avançar pelas ilustrações.','muted'));
+  const grid=el('div',null,'grid section');grid.style.display='grid';
+  for(const [id,item] of Object.entries(content)) grid.append(add(el('article',null,'card'),pitch(id,1,true),el('h3',item.title),el('p',item.goal,'muted'),button('Abrir passo a passo',()=>guide(id,catalogAge,Math.max(1, Math.min(12,weekOf(today())))),'primary')));
+  root.append(grid);
+}
+const questions=['O que ficou mais fácil?','O que quer aprender?','Continua gostando de jogar?'];
+function review(profile,week){
+  const id=activityKey(profile.id,state.start)+'|'+week;
+  const answers=state.reviews[id]??[];
+  const form=el('form');
+  const fields=questions.map((q,i)=>i===2?select([['','Deixar em branco'],['Sim','Sim'],['Às vezes','Às vezes'],['Não','Não']],answers[i]??''):textarea(answers[i]??''));
+  add(form,...questions.map((q,i)=>label(q,fields[i])),submit('Salvar revisão'));
+  form.onsubmit=e=>{e.preventDefault();state.reviews[id]=fields.map(f=>f.value.trim());$('dialog').close();save('Revisão salva.');};
+  openModal('Revisão da semana '+week,el('p',profile.name,'muted'),form);
+}
+function history(root){
+  root.append(titleRow('Histórico',filterControl()),el('p','Acompanhe cada filho no próprio ritmo.','muted'));
+  const grid=el('div',null,'grid section');grid.style.display='grid';
+  if(!selectedProfiles().length) grid.append(el('p','Crie um perfil para acompanhar as atividades.','empty'));
+  for(const p of selectedProfiles()){
+    const items=Object.entries(state.records).filter(([id])=>id.startsWith(p.id+'|')).map(([id,r])=>[id.split('|')[1],r]).sort(([a],[b])=>b.localeCompare(a));
+    const reviewButtons=[4,8,12].map(w=>button((state.reviews[activityKey(p.id,state.start)+'|'+w]?'Editar revisão ':'Revisão ')+w+'ª semana',()=>review(p,w)));
+    const c=add(el('article',null,'card'),el('h3',p.name),el('p',items.length?items.length+' atividade(s) registrada(s)':'Nenhuma atividade registrada.','muted'),add(el('div',null,'row'),...reviewButtons));
+    const weeks=new Map();
+    for(const [day,r] of items){
+      const w=weekOf(day); const group=w>=1&&w<=12?'Semana '+w:'Ciclos anteriores';
+      if(!weeks.has(group)) weeks.set(group,[]);
+      weeks.get(group).push([day,r]);
+    }
+    for(const [name,group] of weeks){
+      const details=el('details');details.open=weeks.keys().next().value===name;
+      const counts=['Realizada','Parcial','Não realizada'].map(x=>group.filter(([,r])=>r.status===x).length);
+      add(details,el('summary',name+' · '+counts[0]+' realizada(s) · '+counts[1]+' parcial(is) · '+counts[2]+' não realizada(s)'));
+      const list=el('div');
+      for(const [date,r] of group) list.append(add(el('div',null,'history-item'),el('p',fmt(date)+' · '+typeTitle(r.activity.type)+' · '+r.status),el('small',[r.minutes?r.minutes+' min':'',r.mood,r.notes].filter(Boolean).join(' · ')),add(el('div',null,'row'),button('Editar registro',()=>record(p,date)))));
+      details.append(list);c.append(details);
+    }
+    grid.append(c);
+  }
+  root.append(grid);
+}
+function profileForm(profile){
+  const form=el('form');
+  const name=input('text',profile?.name??'',{required:true,maxLength:35,placeholder:'Apelido'});
+  const age=select([['7','7 anos'],['9','9 anos']],String(profile?.age??(state.profiles.some(p=>p.age===7)?9:7)));
+  const field=el('fieldset');field.append(el('legend','Dias de escolinha'));
+  const checks=days.map((day,i)=>{const box=input('checkbox');box.checked=profile?.school.includes(i)??false;field.append(add(el('label'),box,document.createTextNode(' '+day)));return box;});
+  add(form,label('Apelido',name),label('Faixa do plano',age),field,submit('Salvar perfil'));
+  form.onsubmit=e=>{
+    e.preventDefault(); if(!name.value.trim()){name.setCustomValidity('Digite um apelido.');name.reportValidity();return;}
+    const values={name:name.value.trim(),age:Number(age.value),school:checks.flatMap((c,i)=>c.checked?[i]:[])};
+    if(profile){
+      for(let i=0;i<84;i++){
+        const day=offset(state.start,i), id=activityKey(profile.id,day);
+        if(day>=today()) break;
+        if(!state.overrides[id]&&!state.records[id]) state.overrides[id]=activity(profile,day);
+      }
+      Object.assign(profile,values);
+    } else state.profiles.push({id:'p'+Date.now().toString(36),...values});
+    $('dialog').close();save('Perfil salvo.');
+  };
+  name.oninput=()=>name.setCustomValidity('');
+  openModal(profile?'Editar perfil':'Novo perfil',form);
+}
+function removeProfile(p){
+  openModal('Excluir perfil',el('p','Excluir '+p.name+' e os registros deste perfil?'),add(el('div',null,'row'),button('Cancelar',()=>$('dialog').close()),button('Excluir perfil',()=>{
+    state.profiles=state.profiles.filter(x=>x.id!==p.id);
+    for(const group of [state.overrides,state.records,state.reviews]) for(const k of Object.keys(group)) if(k.startsWith(p.id+'|')) delete group[k];
+    if(filter===p.id)filter='all';
+    $('dialog').close();save('Perfil excluído.');
+  },'danger')));
+}
+function settings(root){
+  root.append(titleRow('Perfis e plano',state.profiles.length<2?button('Criar perfil',()=>profileForm(),'primary'):null));
+  const grid=el('div',null,'grid');
+  for(const p of state.profiles) grid.append(add(el('article',null,'card'),el('h3',p.name),el('p',p.age+' anos · '+(p.school.length?p.school.map(i=>days[i]).join(', '):'Sem escolinha programada'),'muted'),add(el('div',null,'row'),button('Editar perfil',()=>profileForm(p)),button('Excluir',()=>removeProfile(p),'danger'))));
+  root.append(grid);
+  const form=el('form');
+  const start=input('date',state.start,{required:true});
+  const existing=Object.keys(state.records).length||Object.keys(state.reviews).length||Object.keys(state.overrides).length;
+  add(form,label('Segunda-feira de início',start),el('small',existing?'Para iniciar outro ciclo, escolha uma segunda-feira após o fim do ciclo atual. O histórico de atividades é preservado.':'Escolha uma segunda-feira para iniciar a agenda.'),add(el('div',null,'row'),submit('Salvar data do ciclo')));
+  start.oninput=()=>start.setCustomValidity('');
+  form.onsubmit=e=>{
+    e.preventDefault();
+    if(start.value===state.start){notify('A data do ciclo já está salva.');return;}
+    if(dateOf(start.value).getDay()!==1){start.setCustomValidity('Escolha uma segunda-feira.');start.reportValidity();return;}
+    if(existing&&start.value<=offset(state.start,83)){start.setCustomValidity('Escolha uma data após o fim do ciclo atual.');start.reportValidity();return;}
+    state.start=start.value;chosenWeek=1;save('Data do ciclo salva.');
+  };
+  root.append(add(el('section',null,'card prefs'),el('h3','Ciclo de 12 semanas'),el('p',fmt(state.start,true)+' a '+fmt(offset(state.start,83),true),'muted'),form));
+  root.append(add(el('section',null,'card prefs'),el('h3','Dados neste aparelho'),el('p','Use o mesmo navegador para manter o histórico. Os registros ficam neste aparelho e podem ser apagados ao limpar os dados do navegador.','muted')));
+}
+function go(next){view=next;render();window.scrollTo(0,0);}
+const views={Hoje:home,Agenda:agenda,Exercícios:catalog,Histórico:history,Perfis:settings};
+function render(){
+  $('nav').replaceChildren(...Object.keys(views).map(name=>{const b=button(name,()=>go(name));if(name===view)b.setAttribute('aria-current','page');return b;}));
+  $('main').replaceChildren();
+  if(storageError) $('main').append(el('p','O navegador bloqueou o armazenamento. Os registros podem se perder ao fechar esta página.','note'));
+  views[view]($('main'));
+}
+render();
+if ('serviceWorker' in navigator && ['http:','https:'].includes(location.protocol)) navigator.serviceWorker.register('./sw.js').catch(e=>console.warn('Modo instalado indisponível',e));
+</script>
+</body></html>
