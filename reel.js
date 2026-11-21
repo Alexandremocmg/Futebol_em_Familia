@@ -23,6 +23,14 @@ const reelAssets={
       'Olhe os pés e a bola. Veja como o jogador finaliza.',
       'Agora é sua vez. Conduza, escolha um gol e chute rasteiro.'
     ]
+  },
+  movimento:{
+    path:'pule-e-equilibre-v1',
+    lines:[
+      'Marque quadrados no chão e deixe espaço para pular.',
+      'Olhe os pulos. Vá de quadrado em quadrado, sem pressa.',
+      'Volte pelo caminho. Tente alternar um pé e dois pés.'
+    ]
   }
 };
 const lessonCues=[0,5.2,12.2];

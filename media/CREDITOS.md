@@ -17,3 +17,9 @@ A edição combina um trecho dos pés e da bola com animações originais e inst
 Trechos de [Close up of a Soccer Player Foot Kicking the Ball](https://www.pexels.com/video/close-up-of-a-soccer-player-foot-kicking-the-ball-12232631/), de **Tim Grimbergen**, e de [A Child Kicking Ball Towards Goal Post](https://www.pexels.com/video/a-child-kicking-ball-towards-goal-post-8940724/), de **Kampus Production**, sob a [Licença Pexels](https://www.pexels.com/license/) e os [Termos de Serviço](https://www.pexels.com/terms-of-service/).
 
 A edição vertical combina o contato do pé com a bola, um chute em direção ao gol, animações originais e instruções na imagem. A narração em português usa a voz do aparelho.
+
+## Pule e equilibre
+
+Trecho de [Kids Playing Hopscotch](https://www.pexels.com/video/kids-playing-hopscotch-8951652/), de **Kampus Production**, sob a [Licença Pexels](https://www.pexels.com/license/) e os [Termos de Serviço](https://www.pexels.com/terms-of-service/).
+
+A edição vertical combina a brincadeira filmada com animações originais e instruções na imagem. A narração em português usa a voz do aparelho.

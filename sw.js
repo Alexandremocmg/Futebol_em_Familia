@@ -1,6 +1,6 @@
-const CACHE='futebol-familia-v8';
+const CACHE='futebol-familia-v9';
 const HOME='./?modo=infantil';
-const FILES=[HOME,'./index.html','./kids.css?v=8','./kids.js?v=8','./reel.js?v=8','./reel.css?v=8','./media/bola-no-pe-v1.mp4','./media/bola-no-pe-v1.jpg','./media/passe-amigo-v1.mp4','./media/passe-amigo-v1.jpg','./media/chute-ao-gol-v1.mp4','./media/chute-ao-gol-v1.jpg','./manifest.webmanifest','./icon-192.png','./icon-512.png'];
+const FILES=[HOME,'./index.html','./kids.css?v=9','./kids.js?v=9','./reel.js?v=9','./reel.css?v=9','./media/bola-no-pe-v1.mp4','./media/bola-no-pe-v1.jpg','./media/passe-amigo-v1.mp4','./media/passe-amigo-v1.jpg','./media/chute-ao-gol-v1.mp4','./media/chute-ao-gol-v1.jpg','./media/pule-e-equilibre-v1.mp4','./media/pule-e-equilibre-v1.jpg','./manifest.webmanifest','./icon-192.png','./icon-512.png'];
 
 self.addEventListener('install',event=>{
   event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(FILES.map(file=>new Request(new URL(file,self.registration.scope),{cache:'reload'})))).then(()=>self.skipWaiting()));
@@ -43,7 +43,7 @@ self.addEventListener('fetch',event=>{
   event.respondWith(caches.open(CACHE).then(async cache=>{
     if(event.request.mode==='navigate')return onlinePage(event.request,cache);
     const range=event.request.headers.get('Range');
-    if(range&&/\/media\/(bola-no-pe|passe-amigo|chute-ao-gol)-v1\.mp4$/.test(url.pathname)){
+    if(range&&/\/media\/(bola-no-pe|passe-amigo|chute-ao-gol|pule-e-equilibre)-v1\.mp4$/.test(url.pathname)){
       const asset=await cache.match(url.href,{ignoreVary:true});
       if(asset)return cachedVideo(range,asset);
     }
