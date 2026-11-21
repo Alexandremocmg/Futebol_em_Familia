@@ -167,61 +167,7 @@ function drawKidDemo(canvas,id,step,total){
 }
 
 let kidProfileId='', activeKidDemo=null;
-function kidHome(root) {
-  const container=el('div',null,'kid-wrap');
-  const hero=add(el('section',null,'kid-hero'),el('h1','Bora jogar!'));
-  const chooser=el('div',null,'row');
-  const active=state.profiles.find(p=>p.id===kidProfileId)??state.profiles[0];
-  if(active){
-    kidProfileId=active.id;
-    for(const p of state.profiles){
-      const nickname=p.name===('Filho de '+p.age+' anos')?'Tenho '+p.age+' anos':p.name;
-      const pick=button(nickname,()=>{
-        kidProfileId=p.id; render();
-        $('main').querySelector('[aria-pressed="true"]')?.focus();
-      });
-      pick.setAttribute('aria-pressed',String(p.id===active.id)); chooser.append(pick);
-    }
-    chooser.setAttribute('role','group');chooser.setAttribute('aria-label','Escolha seu perfil');
-    add(hero,el('p','Escolha seu perfil e veja o que dá para brincar hoje.'),chooser);
-  } else add(hero,el('p','Peça a um adulto para criar seu perfil.'),add(el('div',null,'row'),button('Área dos responsáveis',()=>go('Perfis'))));
-  container.append(hero);
-  const now=today(), week=weekOf(now);
-  if(active && week>=1 && week<=12){
-    const item=activity(active,now), lesson=kidLessons[item.type], saved=state.records[activityKey(active.id,now)];
-    const icon=el('span',lesson?.icon??(item.type==='school'?'👟':'🌿'),'kid-chip');
-    icon.setAttribute('aria-hidden','true');
-    const title=lesson?.name??(item.type==='school'?'Hoje tem escolinha!':'Hoje é dia de pausa');
-    const text=lesson ? (saved?.status==='Realizada'?'Você já brincou hoje. Boa!':lesson.short)
-      : item.type==='school'?'Separe a bola e os tênis com um adulto.':'Se quiser, escolha uma brincadeira livre.';
-    const task=add(el('section',null,'kid-task'),icon,add(el('div'),el('p','Hoje','kid-sub'),el('h2',title),el('p',text)));
-    if(lesson) {
-      const actions=add(el('div',null,'kid-actions'),button('▶ Ver como faz',()=>kidDemo(item.type,active,now),'primary'));
-      actions.append(button('⏱ Temporizador',()=>kidTimer(item.type,active,now)));
-      if(!saved)actions.append(button('✓ Já fiz',()=>kidFinish(active,now,item)));
-      task.append(actions);
-    }
-    container.append(task);
-  }
-  const grid=el('div',null,'kid-grid');
-  for(const [id,lesson] of Object.entries(kidLessons)){
-    const tile=button('',()=>kidDemo(id),'kid-tile '+lesson.tone);
-    const icon=el('span',lesson.icon,'kid-icon');icon.setAttribute('aria-hidden','true');
-    add(tile,icon,el('strong',lesson.name),el('small',id==='conducao'?'Aula em vídeo':lesson.short));grid.append(tile);
-  }
-  container.append(add(el('section',null,'kid-section'),el('h2','Escolha uma brincadeira'),grid));
-  root.append(container);
-}
-function kidFinish(profile,date,item){
-  const id=activityKey(profile.id,date);
-  if(state.records[id])return;
-  openModal('Você fez essa brincadeira?',el('p',kidLessons[item.type].name),add(el('div',null,'kid-actions'),
-    button('Ainda não',()=>$('dialog').close()),
-    button('Sim, eu fiz!',()=>{
-      if(!state.records[id])state.records[id]={activity:item,status:'Realizada',minutes:null,mood:'',notes:''};
-      $('dialog').close();save('Boa! Você registrou a brincadeira.');
-    },'primary')));
-}
+function kidHome(root){kidFeed(root);}
 function kidUtterance(text){
   if(!window.speechSynthesis||!window.SpeechSynthesisUtterance)return null;
   const voices=window.speechSynthesis.getVoices();
@@ -235,7 +181,7 @@ function kidUtterance(text){
   return u;
 }
 function kidDemo(id,profile,date=today(),{animated=false}={}){
-  if(id==='conducao'&&!animated){kidReel(profile,date);return;}
+  if(reelAssets[id]&&!animated){kidReel(id,profile,date);return;}
   activeKidDemo?.();
   activeKidTimer?.();
   const selected=profile??(view==='Modo infantil'?state.profiles.find(p=>p.id===kidProfileId):null);
@@ -386,7 +332,7 @@ function kidWorkout(id, profile, date) {
 const timerMemory=new Map();
 const timerPrefix='futebol-em-familia-timer-v1:';
 let activeKidTimer=null;
-function kidTimer(id,profile,date=today(),{auto=false,bell=kidBell()}={}) {
+function kidTimer(id,profile,date=today(),{auto=false,bell=kidBell(),onDone}={}) {
   activeKidDemo?.();
   activeKidTimer?.();
   const lesson=kidLessons[id];
@@ -432,6 +378,11 @@ function kidTimer(id,profile,date=today(),{auto=false,bell=kidBell()}={}) {
       status:'Realizada',minutes:clock.minutes
     };
     save('Boa! Exercício registrado.');
+    if(onDone&&!storageError){
+      dialog.close();
+      onDone();
+      return;
+    }
     refresh();
     message.focus();
   },'primary'):null;
