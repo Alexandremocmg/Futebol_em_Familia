@@ -207,7 +207,7 @@ function kidHome(root) {
   for(const [id,lesson] of Object.entries(kidLessons)){
     const tile=button('',()=>kidDemo(id),'kid-tile '+lesson.tone);
     const icon=el('span',lesson.icon,'kid-icon');icon.setAttribute('aria-hidden','true');
-    add(tile,icon,el('strong',lesson.name),el('small',lesson.short));grid.append(tile);
+    add(tile,icon,el('strong',lesson.name),el('small',id==='conducao'?'Aula em vídeo':lesson.short));grid.append(tile);
   }
   container.append(add(el('section',null,'kid-section'),el('h2','Escolha uma brincadeira'),grid));
   root.append(container);
@@ -234,7 +234,8 @@ function kidUtterance(text){
   if(match)u.voice=match;
   return u;
 }
-function kidDemo(id,profile,date=today()){
+function kidDemo(id,profile,date=today(),{animated=false}={}){
+  if(id==='conducao'&&!animated){kidReel(profile,date);return;}
   activeKidDemo?.();
   activeKidTimer?.();
   const selected=profile??(view==='Modo infantil'?state.profiles.find(p=>p.id===kidProfileId):null);
