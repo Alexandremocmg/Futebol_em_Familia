@@ -222,8 +222,11 @@ function kidFinish(profile,date,item){
       $('dialog').close();save('Boa! Você registrou a brincadeira.');
     },'primary')));
 }
-function kidDemo(id,profile,date){
-  if(activeKidDemo)activeKidDemo();
+function kidDemo(id,profile,date=today()){
+  activeKidDemo?.();
+  activeKidTimer?.();
+  const selected=profile??(view==='Modo infantil'?state.profiles.find(p=>p.id===kidProfileId):null);
+  const bell=kidBell();
   const lesson=kidLessons[id]; if(!lesson)return;
   const dialog=$('dialog');
   dialog.classList.add('demo-dialog');
@@ -234,10 +237,10 @@ function kidDemo(id,profile,date){
   const tip=el('p',null,'demo-help');
   const canSpeak=Boolean(window.speechSynthesis&&window.SpeechSynthesisUtterance);
   const speech=canSpeak?window.speechSynthesis:null;
-  let step=0, elapsed=0, last=0, frame=0, playing=false, complete=false, withVoice=canSpeak, spoken=true, utterance=null;
+  let step=0, elapsed=0, last=0, frame=0, playing=false, withVoice=canSpeak, spoken=true, utterance=null;
   const play=button('▶ Começar',()=>{
     if(playing){ pause(); return; }
-    if(complete){ step=0; elapsed=0; complete=false; }
+    bell.unlock();
     playing=true; last=0;
     narrate(); paint(); frame=requestAnimationFrame(tick);
   },'primary');
@@ -282,10 +285,10 @@ function kidDemo(id,profile,date){
   }
   function paint(){
     const [title,words]=lesson.steps[step];
-    stage.textContent=complete?'Boa! Agora é a sua vez.':'Passo '+(step+1)+' de 3 · '+title;
+    stage.textContent='Passo '+(step+1)+' de 3 · '+title;
     caption.textContent=words;
     canvas.setAttribute('aria-label',title+' — '+words);
-    play.textContent=playing?'Ⅱ Pausar':complete?'↻ Ver de novo':elapsed?'▶ Continuar':'▶ Começar';
+    play.textContent=playing?'Ⅱ Pausar':elapsed?'▶ Continuar':'▶ Começar';
     voice.hidden=!canSpeak;
     voice.textContent=withVoice?'🔊 Som ligado':'🔇 Som desligado';
     voice.setAttribute('aria-pressed',String(withVoice));
@@ -294,7 +297,7 @@ function kidDemo(id,profile,date){
   }
   function choose(i){
     if(i<0||i>=lesson.steps.length)return;
-    step=i;elapsed=0;last=0;complete=false;
+    step=i;elapsed=0;last=0;
     if(playing)narrate();
     paint();
   }
@@ -306,45 +309,79 @@ function kidDemo(id,profile,date){
     const minTime=withVoice?4800:6000;
     if(elapsed>=minTime&&(spoken||elapsed>=16000)){
       if(step<2) choose(step+1);
-      else {complete=true; pause();return;}
+      else {
+        closeDemo(true);
+        kidTimer(id,selected,date,{auto:true,bell});
+        return;
+      }
     }
     frame=requestAnimationFrame(tick);
   }
   function pause(){
     playing=false;cancelAnimationFrame(frame);last=0;stopVoice();paint();
   }
-  function closeDemo(){
-    pause(); dialog.classList.remove('demo-dialog'); activeKidDemo=null;
+  function closeDemo(keepBell=false){
+    pause();
+    dialog.classList.remove('demo-dialog');
+    if(!keepBell)bell.close();
+    activeKidDemo=null;
   }
   activeKidDemo=closeDemo;
-  if(profile&&date){
-    const item=activity(profile,date);
-    panel.append(button('✓ Já fiz',()=>{
-      closeDemo();
-      kidFinish(profile,date,item);
-    }));
-    if(state.records[activityKey(profile.id,date)])panel.lastChild.hidden=true;
-  }
-  panel.append(button('⏱ Temporizador',()=>{
-    const selected=profile??state.profiles.find(p=>p.id===kidProfileId);
-    kidTimer(id,selected,date);
-  }));
+  panel.append(button('⏱ Ir para o temporizador',()=>kidTimer(id,selected,date)));
   tip.textContent=canSpeak?'A narração usa a voz em português do seu aparelho.':'Acompanhe a demonstração pela legenda.';
   openModal(lesson.name,panel);paint();
 }
 $('dialog').addEventListener('close',()=>{if(!$('dialog').open)activeKidDemo?.();});
 
+function kidBell() {
+  let context=null, closed=false;
+  return {
+    unlock(){
+      if(closed)return;
+      try {
+        const Audio=window.AudioContext||window.webkitAudioContext;
+        if(Audio){
+          context??=new Audio();
+          context.resume().catch(()=>{});
+        }
+      }catch{}
+    },
+    ring(){
+      if(closed||!context||context.state!=='running'||document.hidden)return;
+      for(const [delay,frequency] of [[0,620],[.21,820],[.42,970]]){
+        const at=context.currentTime+delay;
+        const tone=context.createOscillator(), volume=context.createGain();
+        tone.frequency.value=frequency;
+        volume.gain.setValueAtTime(.15,at);
+        volume.gain.exponentialRampToValueAtTime(.001,at+.18);
+        tone.connect(volume).connect(context.destination);
+        tone.start(at);tone.stop(at+.19);
+      }
+    },
+    close(){
+      if(closed)return;
+      closed=true;
+      context?.close().catch(()=>{});
+    }
+  };
+}
+function kidWorkout(id, profile, date) {
+  if(!profile)return {item:{type:id,minutes:'',age:7},recordKey:null};
+  const scheduled=activity(profile,date);
+  const base=activityKey(profile.id,date);
+  if(weekOf(date)>=1&&weekOf(date)<=12&&scheduled.type===id)return {item:scheduled,recordKey:base};
+  return {item:{type:id,minutes:'',age:profile.age},recordKey:base+'|extra:'+id};
+}
+
 const timerMemory=new Map();
 const timerPrefix='futebol-em-familia-timer-v1:';
 let activeKidTimer=null;
-function kidTimer(id,profile,date=today()) {
+function kidTimer(id,profile,date=today(),{auto=false,bell=kidBell()}={}) {
   activeKidDemo?.();
   activeKidTimer?.();
   const lesson=kidLessons[id];
-  const age=profile?.age??7;
-  const planned=profile?activity(profile,date):null;
-  const planMinutes=planned?.type===id?Number(planned.minutes):0;
-  const suggested=planMinutes||Number(duration(id,age).match(/\d+/)?.[0])||5;
+  const {item,recordKey}=kidWorkout(id,profile,date);
+  const suggested=Number(item.minutes)||Number(duration(id,item.age).match(/\d+/)?.[0])||5;
   const key=timerPrefix+[profile?.id??'livre',date,id].join('|');
   function readTimer(){
     try{
@@ -353,7 +390,7 @@ function kidTimer(id,profile,date=today()) {
     }catch{}
     return timerMemory.get(key)??{minutes:suggested,remaining:suggested*60000,endAt:0};
   }
-  let clock=readTimer(), interval=0, sound=null, lastSeconds=null;
+  let clock=readTimer(), interval=0, lastSeconds=null, wakeLock=null, wakePending=false;
   const dialog=$('dialog');
   const digits=el('p',null,'kid-timer-digits');
   digits.setAttribute('role','timer');
@@ -366,22 +403,29 @@ function kidTimer(id,profile,date=today()) {
     if(clock.endAt){
       clock.remaining=remaining();
       clock.endAt=0;
+      releaseScreen();
     } else {
-      if(clock.remaining<=0)clock.remaining=clock.minutes*60000;
-      clock.endAt=Date.now()+clock.remaining;
-      try {
-        const Audio=window.AudioContext||window.webkitAudioContext;
-        if(Audio){
-          sound??=new Audio();
-          sound.resume().catch(()=>{});
-        }
-      }catch{}
+      bell.unlock();
+      startCountdown();
+      keepScreenOn();
     }
     lastSeconds=null;
     writeTimer();refresh();
   },'primary');
+  const finish=recordKey?button('✓ Já fiz',()=>{
+    if(state.records[recordKey]?.status==='Realizada')return;
+    state.records[recordKey]={
+      activity:item,mood:'',notes:'',
+      ...state.records[recordKey],
+      status:'Realizada',minutes:clock.minutes
+    };
+    save('Boa! Exercício registrado.');
+    refresh();
+    message.focus();
+  },'primary'):null;
+  message.tabIndex=-1;
   const restart=button('↻ Reiniciar',()=>{
-    clock.endAt=0;clock.remaining=clock.minutes*60000;
+    clock.endAt=0;clock.remaining=clock.minutes*60000;releaseScreen();
     lastSeconds=null;
     writeTimer();refresh();
   });
@@ -396,30 +440,46 @@ function kidTimer(id,profile,date=today()) {
     try{localStorage.setItem(key,JSON.stringify(clock));}catch{}
   }
   function remaining(){return clock.endAt?Math.max(0,clock.endAt-Date.now()):clock.remaining;}
-  function finishSound(){
-    if(!sound||sound.state!=='running'||document.hidden)return;
-    for(const [delay,frequency] of [[0,620],[.19,820]]){
-      const at=sound.currentTime+delay;
-      const tone=sound.createOscillator(), volume=sound.createGain();
-      tone.frequency.value=frequency;
-      volume.gain.setValueAtTime(.13,at);
-      volume.gain.exponentialRampToValueAtTime(.001,at+.17);
-      tone.connect(volume).connect(sound.destination);
-      tone.start(at);tone.stop(at+.18);
-    }
+  function startCountdown(){
+    if(clock.remaining<=0)clock.remaining=clock.minutes*60000;
+    clock.endAt=Date.now()+clock.remaining;
+  }
+  function keepScreenOn(){
+    if(wakeLock||wakePending||!navigator.wakeLock||document.hidden||!clock.endAt||remaining()<=0)return;
+    wakePending=true;
+    navigator.wakeLock.request('screen').then(lock=>{
+      if(activeKidTimer!==close||!clock.endAt||document.hidden||remaining()<=0){
+        lock.release().catch(()=>{});
+        return;
+      }
+      wakeLock=lock;
+      lock.addEventListener('release',()=>{if(wakeLock===lock)wakeLock=null;},{once:true});
+    }).catch(()=>{}).finally(()=>{wakePending=false;});
+  }
+  function releaseScreen(){
+    const held=wakeLock;wakeLock=null;
+    held?.release().catch(()=>{});
+  }
+  function onVisibility(){
+    if(document.hidden)releaseScreen();
+    else {refresh();keepScreenOn();}
   }
   function refresh(){
     if(!dialog.open||!digits.isConnected){close();return;}
     const seconds=Math.ceil(remaining()/1000);
     if(clock.endAt&&seconds===0){
-      if(lastSeconds!==null&&lastSeconds>0)finishSound();
-      clock.remaining=0;clock.endAt=0;writeTimer();
+      if(document.hidden)return;
+      if(lastSeconds!==null&&lastSeconds>0){ try{bell.ring();}catch{} }
+      clock.remaining=0;clock.endAt=0;releaseScreen();writeTimer();
     }
     if(seconds!==lastSeconds){
       digits.textContent=String(Math.floor(seconds/60)).padStart(2,'0')+':'+String(seconds%60).padStart(2,'0');
       lastSeconds=seconds;
     }
-    const status=seconds===0?'Tempo acabou!':clock.endAt?'Valendo!':clock.remaining===clock.minutes*60000?'Tudo pronto?':'Em pausa';
+    const registered=Boolean(recordKey&&state.records[recordKey]?.status==='Realizada');
+    const status=seconds===0?(registered?'Exercício registrado!':'Tempo acabou!'):clock.endAt?'Valendo!':clock.remaining===clock.minutes*60000?'Tudo pronto?':'Em pausa';
+    if(finish)finish.hidden=seconds!==0||registered;
+    go.hidden=seconds===0;
     if(message.textContent!==status)message.textContent=status;
     const text=clock.endAt?'Ⅱ Pausar':seconds>0&&clock.remaining<clock.minutes*60000?'▶ Continuar':'▶ Começar';
     if(go.textContent!==text)go.textContent=text;
@@ -427,15 +487,24 @@ function kidTimer(id,profile,date=today()) {
   }
   function close(){
     clearInterval(interval);
-    sound?.close().catch(()=>{});
+    document.removeEventListener('visibilitychange',onVisibility);
+    releaseScreen();
+    bell.close();
     activeKidTimer=null;
   }
   activeKidTimer=close;
+  if(auto&&(!clock.endAt||remaining()===0)){
+    if(clock.endAt)clock.remaining=0;
+    startCountdown();writeTimer();
+  }
   openModal('Temporizador',add(el('div',null,'kid-timer'),
     el('p',lesson.name,'kid-timer-title'),label('Quanto tempo?',preset),digits,message,
-    add(el('div',null,'kid-actions'),go,restart),
-    el('p','Você pode pausar para beber água ou descansar.','demo-help')));
+    add(el('div',null,'kid-actions'),finish,go,restart),
+    el('p','Mantenha esta tela aberta para ouvir o aviso.','demo-help')));
   interval=setInterval(refresh,200);
+  document.addEventListener('visibilitychange',onVisibility);
   refresh();
+  keepScreenOn();
+  if(auto)message.focus();
 }
 $('dialog').addEventListener('close',()=>{if(!$('dialog').open)activeKidTimer?.();});
