@@ -1,6 +1,6 @@
-const CACHE='futebol-familia-v4';
+const CACHE='futebol-familia-v5';
 const HOME='./?modo=infantil';
-const FILES=[HOME,'./index.html','./kids.css?v=4','./kids.js?v=4','./manifest.webmanifest','./icon-192.png','./icon-512.png'];
+const FILES=[HOME,'./index.html','./kids.css?v=5','./kids.js?v=5','./manifest.webmanifest','./icon-192.png','./icon-512.png'];
 
 self.addEventListener('install',event=>{
   event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(FILES.map(file=>new Request(new URL(file,self.registration.scope),{cache:'reload'})))).then(()=>self.skipWaiting()));

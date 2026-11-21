@@ -222,6 +222,18 @@ function kidFinish(profile,date,item){
       $('dialog').close();save('Boa! Você registrou a brincadeira.');
     },'primary')));
 }
+function kidUtterance(text){
+  if(!window.speechSynthesis||!window.SpeechSynthesisUtterance)return null;
+  const voices=window.speechSynthesis.getVoices();
+  const language=v=>v.lang.toLowerCase().replace('_','-');
+  const brazilian=voices.filter(v=>language(v)==='pt-br');
+  const match=brazilian.find(v=>v.localService)??brazilian[0]??voices.find(v=>language(v).startsWith('pt'));
+  if(!match&&voices.length)return null;
+  const u=new SpeechSynthesisUtterance(text);
+  u.lang='pt-BR';u.rate=.9;
+  if(match)u.voice=match;
+  return u;
+}
 function kidDemo(id,profile,date=today()){
   activeKidDemo?.();
   activeKidTimer?.();
@@ -244,7 +256,7 @@ function kidDemo(id,profile,date=today()){
     playing=true; last=0;
     narrate(); paint(); frame=requestAnimationFrame(tick);
   },'primary');
-  const voice=button('🔊 Som ligado',()=>{
+  const voice=button('🔊 Narração ligada',()=>{
     withVoice=!withVoice;
     if(playing)narrate();else stopVoice();
     paint();
@@ -263,14 +275,8 @@ function kidDemo(id,profile,date=today()){
     stopVoice();
     if(!withVoice||!speech)return;
     const [title,words]=lesson.steps[step];
-    const u=new SpeechSynthesisUtterance(title+'. '+words);
-    u.lang='pt-BR';u.rate=.9;
-    const voices=speech.getVoices();
-    const language=v=>v.lang.toLowerCase().replace('_','-');
-    const brazilian=voices.filter(v=>language(v)==='pt-br');
-    const match=brazilian.find(v=>v.localService)??brazilian[0]??voices.find(v=>language(v).startsWith('pt'));
-    if(match)u.voice=match;
-    else if(voices.length){
+    const u=kidUtterance(title+'. '+words);
+    if(!u){
       tip.textContent='A voz em português não está disponível neste aparelho. Siga pela legenda.';
       return;
     }
@@ -290,7 +296,7 @@ function kidDemo(id,profile,date=today()){
     canvas.setAttribute('aria-label',title+' — '+words);
     play.textContent=playing?'Ⅱ Pausar':elapsed?'▶ Continuar':'▶ Começar';
     voice.hidden=!canSpeak;
-    voice.textContent=withVoice?'🔊 Som ligado':'🔇 Som desligado';
+    voice.textContent=withVoice?'🔊 Narração ligada':'🔇 Narração desligada';
     voice.setAttribute('aria-pressed',String(withVoice));
     dots.forEach((button,i)=>{if(step===i)button.setAttribute('aria-current','step');else button.removeAttribute('aria-current');});
     drawKidDemo(canvas,id,step,elapsed);
@@ -346,17 +352,20 @@ function kidBell() {
         }
       }catch{}
     },
-    ring(){
-      if(closed||!context||context.state!=='running'||document.hidden)return;
-      for(const [delay,frequency] of [[0,620],[.21,820],[.42,970]]){
+    ring(onEnded){
+      if(closed||!context||context.state!=='running'||document.hidden)return false;
+      const notes=[[0,620],[.21,820],[.42,970]];
+      for(const [i,[delay,frequency]] of notes.entries()){
         const at=context.currentTime+delay;
         const tone=context.createOscillator(), volume=context.createGain();
         tone.frequency.value=frequency;
         volume.gain.setValueAtTime(.15,at);
         volume.gain.exponentialRampToValueAtTime(.001,at+.18);
         tone.connect(volume).connect(context.destination);
+        if(i===notes.length-1)tone.onended=onEnded;
         tone.start(at);tone.stop(at+.19);
       }
+      return true;
     },
     close(){
       if(closed)return;
@@ -391,6 +400,7 @@ function kidTimer(id,profile,date=today(),{auto=false,bell=kidBell()}={}) {
     return timerMemory.get(key)??{minutes:suggested,remaining:suggested*60000,endAt:0};
   }
   let clock=readTimer(), interval=0, lastSeconds=null, wakeLock=null, wakePending=false;
+  let noticeTurn=0, noticeVoice=null, noticeTimeout=0;
   const dialog=$('dialog');
   const digits=el('p',null,'kid-timer-digits');
   digits.setAttribute('role','timer');
@@ -414,6 +424,7 @@ function kidTimer(id,profile,date=today(),{auto=false,bell=kidBell()}={}) {
   },'primary');
   const finish=recordKey?button('✓ Já fiz',()=>{
     if(state.records[recordKey]?.status==='Realizada')return;
+    stopNotice();
     state.records[recordKey]={
       activity:item,mood:'',notes:'',
       ...state.records[recordKey],
@@ -425,11 +436,13 @@ function kidTimer(id,profile,date=today(),{auto=false,bell=kidBell()}={}) {
   },'primary'):null;
   message.tabIndex=-1;
   const restart=button('↻ Reiniciar',()=>{
-    clock.endAt=0;clock.remaining=clock.minutes*60000;releaseScreen();
+    stopNotice();
+    clock.endAt=0;clock.remaining=clock.minutes*60000;
     lastSeconds=null;
     writeTimer();refresh();
   });
   preset.onchange=()=>{
+    stopNotice();
     const minutes=Number(preset.value);
     clock={minutes,remaining:minutes*60000,endAt:0};
     lastSeconds=null;
@@ -464,19 +477,56 @@ function kidTimer(id,profile,date=today(),{auto=false,bell=kidBell()}={}) {
     if(document.hidden)releaseScreen();
     else {refresh();keepScreenOn();}
   }
+  function alreadyRegistered(){
+    return Boolean(recordKey&&state.records[recordKey]?.status==='Realizada');
+  }
+  function stopNotice(){
+    noticeTurn++;
+    clearTimeout(noticeTimeout);
+    releaseScreen();
+    if(noticeVoice){
+      noticeVoice=null;
+      window.speechSynthesis.cancel();
+    }
+  }
+  function finishNotice(){
+    const turn=++noticeTurn;
+    const done=()=>{
+      if(turn!==noticeTurn)return;
+      clearTimeout(noticeTimeout);
+      noticeVoice=null;
+      releaseScreen();
+    };
+    noticeTimeout=setTimeout(done,12000);
+    const announce=()=>{
+      if(turn!==noticeTurn)return;
+      if(!dialog.open||!digits.isConnected||document.hidden){done();return;}
+      try{
+        const text=finish&&!alreadyRegistered()?'Tempo acabou! Toque em Já fiz.':'Tempo acabou!';
+        const u=kidUtterance(text);
+        if(!u){done();return;}
+        noticeVoice=u;
+        u.onend=u.onerror=done;
+        window.speechSynthesis.speak(u);
+      }catch{done();}
+    };
+    try{if(bell.ring(announce))return;}catch{}
+    announce();
+  }
   function refresh(){
     if(!dialog.open||!digits.isConnected){close();return;}
     const seconds=Math.ceil(remaining()/1000);
     if(clock.endAt&&seconds===0){
       if(document.hidden)return;
-      if(lastSeconds!==null&&lastSeconds>0){ try{bell.ring();}catch{} }
-      clock.remaining=0;clock.endAt=0;releaseScreen();writeTimer();
+      if(lastSeconds!==null&&lastSeconds>0)finishNotice();
+      else releaseScreen();
+      clock.remaining=0;clock.endAt=0;writeTimer();
     }
     if(seconds!==lastSeconds){
       digits.textContent=String(Math.floor(seconds/60)).padStart(2,'0')+':'+String(seconds%60).padStart(2,'0');
       lastSeconds=seconds;
     }
-    const registered=Boolean(recordKey&&state.records[recordKey]?.status==='Realizada');
+    const registered=alreadyRegistered();
     const status=seconds===0?(registered?'Exercício registrado!':'Tempo acabou!'):clock.endAt?'Valendo!':clock.remaining===clock.minutes*60000?'Tudo pronto?':'Em pausa';
     if(finish)finish.hidden=seconds!==0||registered;
     go.hidden=seconds===0;
@@ -486,9 +536,9 @@ function kidTimer(id,profile,date=today(),{auto=false,bell=kidBell()}={}) {
     preset.disabled=Boolean(clock.endAt);
   }
   function close(){
+    stopNotice();
     clearInterval(interval);
     document.removeEventListener('visibilitychange',onVisibility);
-    releaseScreen();
     bell.close();
     activeKidTimer=null;
   }
